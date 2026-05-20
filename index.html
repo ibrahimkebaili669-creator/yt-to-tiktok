@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مُقسّم اليوتيوب لـ 10 مقاطع ذكية</title>
+    <!-- استدعاء مكتبة FFmpeg الذكية للتقطيع داخل المتصفح -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
     <style>
         :root {
             --primary-color: #fe2c55; /* لون تيك توك */
@@ -103,7 +105,7 @@
             outline: none;
         }
 
-        /* صندوق رفع فيديو تجريبي */
+        /* صندوق رفع فيديو حقيقي */
         .demo-upload-box {
             background: linear-gradient(145deg, #222, #1a1a1a);
             border: 2px dashed var(--secondary-color);
@@ -230,7 +232,7 @@
         video {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain; /* تم التعديل ليعرض المقاس العمودي بوضوح */
         }
 
         .video-title {
@@ -259,6 +261,8 @@
         .btn-download {
             background-color: #333;
             color: #fff;
+            text-decoration: none;
+            text-align: center;
         }
 
         .btn-tiktok {
@@ -296,54 +300,54 @@
     </div>
 
     <header>
-        <h1>مُقسّم اليوتيوب لـ 10 مقاطع مخصصة ✂️</h1>
-        <p>حدد الفيديوهات التي تعجبك من بين 10 أجزاء مقترحة وعاينها فوراً قبل النشر</p>
+        <h1>مُقسّم الفيديوهات لـ 10 مقاطع ذكية وعمودية ✂️</h1>
+        <p>قم برفع الفيديو الخاص بك ليتم تقطيعه تلقائياً إلى مقاطع عمودية مخصصة لتيك توك وكوايي</p>
     </header>
 
     <div class="container">
         <!-- رابط الفيديو الرئيسي -->
         <div class="input-group">
-            <label for="yt-url">ضع رابط فيديو اليوتيوب الطويل هنا:</label>
+            <label for="yt-url">ضع رابط فيديو اليوتيوب (أو ارفع الملف مباشرة بالأسفل لسرعة المعالجة):</label>
             <input type="text" id="yt-url" placeholder="https://www.youtube.com/watch?v=...">
         </div>
 
-        <!-- خطوة رفع فيديو للمعاينة الآمنة -->
+        <!-- صندوق رفع فيديو حقيقي ومعالجته -->
         <div class="demo-upload-box">
-            <label style="color: var(--secondary-color); font-weight: bold;">⚙️ خطوة للمعاينة (اختيارية بدون حظر):</label>
-            <p style="font-size: 0.9rem; margin: 5px 0 15px 0; color: #aaa;">اختر أي فيديو قصير من جهازك ليتم تكراره وعرضه كأجزاء مقسمة بدون حظر المتصفحات</p>
+            <label style="color: var(--secondary-color); font-weight: bold;">📁 اختر الفيديو المراد تقسيمه وتعديله من جهازك:</label>
+            <p style="font-size: 0.9rem; margin: 5px 0 15px 0; color: #aaa;">سيتم تقطيع هذا الفيديو فعلياً وتحويل أبعاده إلى عمودية ذكية</p>
             <input type="file" id="local-video-file" accept="video/*">
         </div>
 
         <!-- لوحة التحكم بالـ 10 مقاطع -->
         <div class="selection-panel">
-            <h3>تخصيص أجزاء التقسيم الذكي (اختر ما تريد معالجته):</h3>
+            <h3>تخصيص أجزاء التقسيم الذكي (اختر الفترات الزمنية بالدقائق):</h3>
             <div class="parts-list">
-                <label class="part-item"><input type="checkbox" class="part-check" value="1" checked> <span>الجزء 1 (00-12 د)</span></label>
-                <label class="part-item"><input type="checkbox" class="part-check" value="2" checked> <span>الجزء 2 (12-25 د)</span></label>
-                <label class="part-item"><input type="checkbox" class="part-check" value="3"> <span>الجزء 3 (25-37 د)</span></label>
-                <label class="part-item"><input type="checkbox" class="part-check" value="4"> <span>الجزء 4 (37-50 د)</span></label>
-                <label class="part-item"><input type="checkbox" class="part-check" value="5"> <span>الجزء 5 (50-62 د)</span></label>
-                <label class="part-item"><input type="checkbox" class="part-check" value="6"> <span>الجزء 6 (62-75 د)</span></label>
-                <label class="part-item"><input type="checkbox" class="part-check" value="7"> <span>الجزء 7 (75-87 د)</span></label>
-                <label class="part-item"><input type="checkbox" class="part-check" value="8"> <span>الجزء 8 (87-100 د)</span></label>
-                <label class="part-item"><input type="checkbox" class="part-check" value="9"> <span>الجزء 9 (100-112 د)</span></label>
-                <label class="part-item"><input type="checkbox" class="part-check" value="10"> <span>الجزء 10 (الأخير)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="1" data-start="0" data-duration="60" checked> <span>المقطع 1 (الدقيقة الأولى)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="2" data-start="60" data-duration="60" checked> <span>المقطع 2 (الدقيقة الثانية)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="3" data-start="120" data-duration="60"> <span>المقطع 3 (الدقيقة الثالثة)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="4" data-start="180" data-duration="60"> <span>المقطع 4 (الدقيقة الرابعة)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="5" data-start="240" data-duration="60"> <span>المقطع 5 (الدقيقة الخامسة)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="6" data-start="300" data-duration="60"> <span>المقطع 6 (الدقيقة السادسة)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="7" data-start="360" data-duration="60"> <span>المقطع 7 (الدقيقة السابعة)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="8" data-start="420" data-duration="60"> <span>المقطع 8 (الدقيقة الثامنة)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="9" data-start="480" data-duration="60"> <span>المقطع 9 (الدقيقة التاسعة)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="10" data-start="540" data-duration="60"> <span>المقطع 10 (الدقيقة العاشرة)</span></label>
             </div>
         </div>
 
-        <button class="btn-submit" onclick="processSelectedVideos()">تأكيد وتقسيم المقاطع المختارة 🚀</button>
+        <button class="btn-submit" onclick="processSelectedVideos()">تأكيد وتقسيم المقاطع المختارة عمودياً 🚀</button>
 
         <!-- تحميل -->
         <div class="loading-section" id="loading">
             <div class="spinner"></div>
-            <p>جاري معالجة وتقسيم المقاطع التي قمت بتحديدها بمقاس عمودي ذكي...</p>
+            <div id="loading-text" style="margin-top: 10px; font-weight: bold;">جاري تهيئة محرك المونتاج الذكي...</div>
         </div>
 
         <!-- قسم النتائج التفاعلي -->
         <div class="results-section" id="results">
-            <h2>المقاطع التي قمت باختيارها (جاهزة للمعاينة والنشر):</h2>
+            <h2>المقاطع الجاهزة (تم قصها وتحويل أبعادها عمودياً):</h2>
             <div class="results-grid" id="video-grid-container">
-                <!-- سيتم توليد الكروت هنا ديناميكياً بواسطة الجافاسكربت -->
+                <!-- توليد الكروت هنا حقيقياً -->
             </div>
         </div>
     </div>
@@ -352,6 +356,9 @@
 
     <script>
         let isTikTokConnected = false;
+        const { createFFmpeg, fetchFile } = FFmpeg;
+        // إنشاء نسخة من محرك التقطيع والمونتاج
+        const ffmpeg = createFFmpeg({ log: true });
 
         function toggleTikTokConnection() {
             const btn = document.getElementById('connect-btn');
@@ -371,70 +378,112 @@
             }
         }
 
-        // دالة معالجة وعرض المقاطع المختارة
-        function processSelectedVideos() {
-            var url = document.getElementById('yt-url').value;
-            if(url.trim() === "") {
-                alert("من فضلك أدخل رابط فيديو يوتيوب صحيح أولاً!");
+        // الدالة الأساسية لمعالجة الفيديوهات حقيقياً
+        async function processSelectedVideos() {
+            const fileInput = document.getElementById('local-video-file');
+            const ytUrl = document.getElementById('yt-url').value;
+
+            // إذا حاول وضع رابط يوتيوب بدون رفع ملف، نوجهه للحل الأفضل
+            if (ytUrl.trim() !== "" && (!fileInput.files || !fileInput.files[0])) {
+                alert("💡 روابط يوتيوب المباشرة تتطلب سيرفر خاص لمنع الحظر. لكي تعمل الصفحة معك الآن بشكل مجاني وسريع 100%، يرجى تحميل الفيديو على جهازك أولاً ثم اختياره من زر (اختر الفيديو المراد تقسيمه).");
                 return;
             }
 
-            // تجميع الأجزاء التي اختارها المستخدم
-            const checkboxes = document.querySelectorAll('.part-check');
-            let selectedParts = [];
-            checkboxes.forEach(cb => {
-                if(cb.checked) { selectedParts.push(cb.value); }
-            });
+            if (!fileInput.files || !fileInput.files[0]) {
+                alert("من فضلك قم باختيار ملف فيديو من جهازك أولاً لتقطيطه!");
+                return;
+            }
 
-            if(selectedParts.length === 0) {
+            const checkboxes = document.querySelectorAll('.part-check:checked');
+            if(checkboxes.length === 0) {
                 alert("من فضلك اختر جزءاً واحداً على الأقل لتقسيمه!");
                 return;
             }
 
-            // التحقق مما إذا كان المستخدم قد رفع فيديو محلي للمعاينة
-            const fileInput = document.getElementById('local-video-file');
-            let videoObjectURL = "";
-            
-            if (fileInput.files && fileInput.files[0]) {
-                // تحويل الفيديو المرفوع من جهازك إلى رابط داخلي آمن وسريع جداً
-                videoObjectURL = URL.createObjectURL(fileInput.files[0]);
-            } else {
-                // إذا لم يرفع فيديو، نستخدم رابط احتياطي عام جداً
-                videoObjectURL = "https://www.w3schools.com/html/mov_bbb.mp4";
-            }
+            const loadingSection = document.getElementById('loading');
+            const loadingText = document.getElementById('loading-text');
+            const resultsSection = document.getElementById('results');
+            const gridContainer = document.getElementById('video-grid-container');
 
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('results').style.display = 'none';
+            loadingSection.style.display = 'block';
+            resultsSection.style.display = 'none';
+            gridContainer.innerHTML = ""; 
 
-            setTimeout(function() {
-                document.getElementById('loading').style.display = 'none';
-                const gridContainer = document.getElementById('video-grid-container');
-                gridContainer.innerHTML = ""; // تصفية النتائج السابقة
+            try {
+                // التأكد من تشغيل مكتبة المونتاج داخل المتصفح
+                if (!ffmpeg.isLoaded()) {
+                    loadingText.innerText = "جاري تحميل محرك التقطيع (قد يستغرق ثوانٍ في المرة الأولى)...";
+                    await ffmpeg.load();
+                }
 
-                // بناء كروت الفيديوهات الداخلية الآمنة التي لا يمكن حظرها
-                selectedParts.forEach(part => {
+                const videoFile = fileInput.files[0];
+                loadingText.innerText = "جاري قراءة ملف الفيديو الذكي...";
+                // كتابة ملف الفيديو في الذاكرة الوهمية للمتصفح ليقرأها محرك FFmpeg
+                ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(videoFile));
+
+                // معالجة كل جزء تم اختياره
+                for (let i = 0; i < checkboxes.length; i++) {
+                    const cb = checkboxes[i];
+                    const partNum = cb.value;
+                    const startTime = cb.getAttribute('data-start');
+                    const duration = cb.getAttribute('data-duration');
+
+                    loadingText.innerText = `جاري تجهيز وقص المقطع رقم ${partNum} وتحويله لمقاس تيك توك العمودي...`;
+
+                    const outputName = `output_${partNum}.mp4`;
+
+                    /* 
+                       كود FFmpeg السحري:
+                       -ss: وقت البداية
+                       -t: المدة الزمنية
+                       -vf "crop=ih*9/16:ih": يقوم بقص الفيديو من المنتصف ليصبح بأبعاد 9:16 عمودي متناسق تماماً مع الهواتف الذكية.
+                    */
+                    await ffmpeg.run(
+                        '-ss', startTime.toString(),
+                        '-i', 'input.mp4',
+                        '-t', duration.toString(),
+                        '-vf', 'crop=ih*9/16:ih',
+                        '-c:v', 'libx264',
+                        '-crf', '23',
+                        '-preset', 'veryfast',
+                        '-c:a', 'copy',
+                        outputName
+                    );
+
+                    // قراءة الملف الناتج من الذاكرة وتحويله لرابط حقيقي يمكن تشغيله وتحميله
+                    const data = ffmpeg.FS('readFile', outputName);
+                    const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
+                    const videoURL = URL.createObjectURL(videoBlob);
+
+                    // إنشاء كرت الفيديو الحقيقي وعرضه مباشرة للمستخدم
                     let cardHTML = `
                         <div class="video-card">
                             <div class="video-container">
-                                <video controls playsinline loop muted autoplay>
-                                    <source src="${videoObjectURL}" type="video/mp4">
+                                <video controls playsinline loop autoplay muted>
+                                    <source src="${videoURL}" type="video/mp4">
                                     متصفحك لا يدعم تشغيل الفيديوهات.
                                 </video>
                             </div>
-                            <div class="video-title">🎬 المقطع المُختار (جزء ${part})</div>
+                            <div class="video-title">🎬 مقطع عمودي جاهز (جزء ${partNum})</div>
                             <div class="actions-box">
-                                <button class="btn-action btn-download" onclick="alert('جاري تحميل الجزء ${part} المفرغ إلى جهازك...')">📥 تحميل المقطع</button>
-                                <button class="btn-action btn-tiktok" onclick="shareToTikTok(${part}, this)">🎵 نشر على TikTok</button>
+                                <a class="btn-action btn-download" href="${videoURL}" download="TikTok_Part_${partNum}.mp4">📥 تحميل هذا المقطع</a>
+                                <button class="btn-action btn-tiktok" onclick="shareToTikTok(${partNum}, this)">🎵 نشر على TikTok</button>
                                 <div class="upload-progress-bar"><div class="progress-fill"></div></div>
                             </div>
                         </div>
                     `;
                     gridContainer.innerHTML += cardHTML;
-                });
+                }
 
-                document.getElementById('results').style.display = 'block';
-                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-            }, 1500);
+                loadingSection.style.display = 'none';
+                resultsSection.style.display = 'block';
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                console.error(error);
+                alert("حدث خطأ أثناء معالجة الفيديو، تأكد من أن صيغة الفيديو مدعومة (يفضل MP4) وحجمه ليس ضخماً جداً على المتصفح.");
+                loadingSection.style.display = 'none';
+            }
         }
 
         function shareToTikTok(partNumber, buttonElement) {
