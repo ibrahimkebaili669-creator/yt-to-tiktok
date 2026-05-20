@@ -103,6 +103,16 @@
             outline: none;
         }
 
+        /* 🎥 تنسيق صندوق المعاينة الرئيسي الجديد */
+        .main-preview-box {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
         /* لوحة اختيار الـ 10 مقاطع */
         .selection-panel {
             background-color: #1a1a1a;
@@ -217,7 +227,7 @@
             border: 1px solid #444;
         }
 
-        video {
+        iframe, video {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -297,11 +307,18 @@
             <input type="text" id="yt-url" placeholder="https://www.youtube.com/watch?v=...">
         </div>
 
+        <!-- 🎥 الجزء الجديد المضاف: صندوق عرض ومعاينة فيديو اليوتيوب الرئيسي المباشر -->
+        <div class="main-preview-box">
+            <label>شاشة المعاينة الرئيسية للموقع:</label>
+            <div class="video-container" style="max-width: 400px; margin: 0 auto;">
+                <iframe width="100%" height="100%" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+
         <!-- لوحة التحكم بالـ 10 مقاطع -->
         <div class="selection-panel">
             <h3>تخصيص أجزاء التقسيم الذكي (اختر ما تريد معالجته):</h3>
             <div class="parts-list">
-                <!-- تم توليد 10 مقاطع افتراضية مسبقاً بناء على طلبك مع توقيت من 10 لـ 20 دقيقة لكل مقطع -->
                 <label class="part-item"><input type="checkbox" class="part-check" value="1" checked> <span>الجزء 1 (00-12 د)</span></label>
                 <label class="part-item"><input type="checkbox" class="part-check" value="2" checked> <span>الجزء 2 (12-25 د)</span></label>
                 <label class="part-item"><input type="checkbox" class="part-check" value="3"> <span>الجزء 3 (25-37 د)</span></label>
