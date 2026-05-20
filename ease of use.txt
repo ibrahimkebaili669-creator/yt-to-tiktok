@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مُقسّم اليوتيوب لـ 10 مقاطع ذكية</title>
+    <style>
+        :root {
+            --primary-color: #fe2c55; /* لون تيك توك */
+            --secondary-color: #25f4ee; 
+            --card-bg: #1e1e1e;
+            --text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* شريط الحساب العلوي */
+        .account-status {
+            background-color: #1a1a1a;
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-connect {
+            background-color: #fff;
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-connect.connected {
+            background-color: #25d366;
+            color: white;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(145deg, #1f1f1f, #121212);
+            border-bottom: 2px solid #2d2d2d;
+        }
+
+        header h1 {
+            font-size: 2.3rem;
+            margin: 0;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: #e0e0e0;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            background-color: #1a1a1a;
+            color: #fff;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        /* لوحة اختيار الـ 10 مقاطع */
+        .selection-panel {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .selection-panel h3 {
+            margin-top: 0;
+            color: var(--secondary-color);
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .parts-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .part-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #262626;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .part-item:hover {
+            background-color: #333;
+        }
+
+        .part-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-submit:hover { opacity: 0.9; }
+
+        /* أنميشن التحميل */
+        .loading-section {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #333;
+            border-top: 4px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 15px auto;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* قسم النتائج وشبكة الفيديوهات */
+        .results-section {
+            display: none;
+            margin-top: 40px;
+            border-top: 2px solid #333;
+            padding-top: 30px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .video-card {
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #333;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .video-container {
+            width: 100%;
+            height: 380px;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #444;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-title {
+            font-weight: bold;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .actions-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+
+        .btn-download {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .btn-tiktok {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .upload-progress-bar {
+            display: none;
+            width: 100%;
+            background-color: #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            width: 0%;
+            height: 8px;
+            background-color: var(--secondary-color);
+            transition: width 0.4s;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="account-status">
+        <span id="status-text">❌ حساب تيك توك غير مرتبط حالياً</span>
+        <button class="btn-connect" id="connect-btn" onclick="toggleTikTokConnection()">ربط حساب TikTok</button>
+    </div>
+
+    <header>
+        <h1>مُقسّم اليوتيوب لـ 10 مقاطع مخصصة ✂️</h1>
+        <p>حدد الفيديوهات التي تعجبك من بين 10 أجزاء مقترحة وعاينها فوراً قبل النشر</p>
+    </header>
+
+    <div class="container">
+        <!-- رابط الفيديو -->
+        <div class="input-group">
+            <label for="yt-url">ضع رابط فيديو اليوتيوب الطويل هنا:</label>
+            <input type="text" id="yt-url" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+
+        <!-- لوحة التحكم بالـ 10 مقاطع -->
+        <div class="selection-panel">
+            <h3>تخصيص أجزاء التقسيم الذكي (اختر ما تريد معالجته):</h3>
+            <div class="parts-list">
+                <!-- تم توليد 10 مقاطع افتراضية مسبقاً بناء على طلبك مع توقيت من 10 لـ 20 دقيقة لكل مقطع -->
+                <label class="part-item"><input type="checkbox" class="part-check" value="1" checked> <span>الجزء 1 (00-12 د)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="2" checked> <span>الجزء 2 (12-25 د)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="3"> <span>الجزء 3 (25-37 د)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="4"> <span>الجزء 4 (37-50 د)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="5"> <span>الجزء 5 (50-62 د)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="6"> <span>الجزء 6 (62-75 د)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="7"> <span>الجزء 7 (75-87 د)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="8"> <span>الجزء 8 (87-100 د)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="9"> <span>الجزء 9 (100-112 د)</span></label>
+                <label class="part-item"><input type="checkbox" class="part-check" value="10"> <span>الجزء 10 (الأخير)</span></label>
+            </div>
+        </div>
+
+        <button class="btn-submit" onclick="processSelectedVideos()">تأكيد وتقسيم المقاطع المختارة 🚀</button>
+
+        <!-- تحميل -->
+        <div class="loading-section" id="loading">
+            <div class="spinner"></div>
+            <p>جاري سحب المقاطع التي قمت بتحديدها وتحويلها إلى مقاس عمودي تيك توك...</p>
+        </div>
+
+        <!-- قسم النتائج التفاعلي والمفلتر -->
+        <div class="results-section" id="results">
+            <h2>المقاطع التي قمت باختيارها (جاهزة للمعاينة):</h2>
+            <div class="results-grid" id="video-grid-container">
+                <!-- سيتم توليد الكروت هنا ديناميكياً بواسطة الجافاسكربت بناء على اختيار المستخدم -->
+            </div>
+        </div>
+    </div>
+
+    <footer>جميع الحقوق محفوظة لموقعك الذكي © 2026</footer>
+
+    <script>
+        let isTikTokConnected = false;
+
+        function toggleTikTokConnection() {
+            const btn = document.getElementById('connect-btn');
+            const txt = document.getElementById('status-text');
+            
+            if(!isTikTokConnected) {
+                isTikTokConnected = true;
+                btn.innerText = "فصل الحساب";
+                btn.classList.add('connected');
+                txt.innerText = "✅ متصل بحسابك: @YourProfile";
+                alert("تم ربط تيك توك بنجاح!");
+            } else {
+                isTikTokConnected = false;
+                btn.innerText = "ربط حساب TikTok";
+                btn.classList.remove('connected');
+                txt.innerText = "❌ حساب تيك توك غير مرتبط حالياً";
+            }
+        }
+
+        // دالة معالجة وعرض المقاطع المختارة فقط ديناميكياً
+        function processSelectedVideos() {
+            var url = document.getElementById('yt-url').value;
+            if(url.trim() === "") {
+                alert("من فضلك أدخل رابط فيديو يوتيوب صحيح أولاً!");
+                return;
+            }
+
+            // تجميع الأجزاء التي اختارها المستخدم
+            const checkboxes = document.querySelectorAll('.part-check');
+            let selectedParts = [];
+            checkboxes.forEach(cb => {
+                if(cb.checked) { selectedParts.push(cb.value); }
+            });
+
+            if(selectedParts.length === 0) {
+                alert("من فضلك اختر مقطعاً واحداً على الأقل من لوحة الـ 10 أجزاء لتقسيمه!");
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+
+            // فيديوهات تجريبية عمودية مختلفة لتبدو المعاينة حقيقية ومتنوعة
+            const sampleVideos = [
+                "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-light-watching-something-41983-large.mp4",
+                "https://assets.mixkit.co/videos/preview/mixkit-vertical-shot-of-a-robot-head-42777-large.mp4",
+                "https://assets.mixkit.co/videos/preview/mixkit-gamer-playing-with-headphones-illuminated-by-neon-lights-41979-large.mp4"
+            ];
+
+            setTimeout(function() {
+                document.getElementById('loading').style.display = 'none';
+                const gridContainer = document.getElementById('video-grid-container');
+                gridContainer.innerHTML = ""; // تصفية النتائج السابقة
+
+                // بناء كروت الفيديوهات التي تم اختيارها فقط
+                selectedParts.forEach(part => {
+                    let randomVideo = sampleVideos[(part - 1) % sampleVideos.length];
+                    let cardHTML = `
+                        <div class="video-card">
+                            <div class="video-container">
+                                <video controls>
+                                    <source src="${randomVideo}" type="video/mp4">
+                                </video>
+                            </div>
+                            <div class="video-title">المقطع المُختار (جزء ${part})</div>
+                            <div class="actions-box">
+                                <button class="btn-action btn-download" onclick="alert('جاري تحميل الجزء ${part}...')">📥 تحميل المقطع</button>
+                                <button class="btn-action btn-tiktok" onclick="shareToTikTok(${part}, this)">🎵 نشر على TikTok</button>
+                                <div class="upload-progress-bar"><div class="progress-fill"></div></div>
+                            </div>
+                        </div>
+                    `;
+                    gridContainer.innerHTML += cardHTML;
+                });
+
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            }, 2000);
+        }
+
+        function shareToTikTok(partNumber, buttonElement) {
+            if(!isTikTokConnected) {
+                alert("يجب ربط حسابك في تيك توك أولاً من الشريط العلوي.");
+                return;
+            }
+
+            let caption = prompt("اكتب وصف الفيديو والهاشتاقات لـ لتيك توك:", `#يوتيوب #تيك_توك #جزء_${partNumber}`);
+            if (caption === null) return;
+
+            buttonElement.disabled = true;
+            buttonElement.innerText = "جاري رفع المقطع...";
+
+            const card = buttonElement.closest('.video-card');
+            const progressBar = card.querySelector('.upload-progress-bar');
+            const progressFill = card.querySelector('.progress-fill');
+            progressBar.style.display = 'block';
+            
+            let width = 0;
+            let interval = setInterval(function() {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    alert(`🎉 تم نشر الجزء رقم ${partNumber} بنجاح على تيك توك!`);
+                    buttonElement.disabled = false;
+                    buttonElement.innerText = "🎵 نشر على TikTok";
+                    progressBar.style.display = 'none';
+                    progressFill.style.width = '0%';
+                } else {
+                    width += 10;
+                    progressFill.style.width = width + '%';
+                }
+            }, 250); 
+        }
+    </script>
+</body>
+</html>
