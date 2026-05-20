@@ -103,7 +103,7 @@
             outline: none;
         }
 
-        /* 🎥 تنسيق صندوق المعاينة الرئيسي الجديد */
+        /* 🎥 صندوق المعاينة الرئيسي */
         .main-preview-box {
             background-color: #1a1a1a;
             border: 1px solid #333;
@@ -307,7 +307,7 @@
             <input type="text" id="yt-url" placeholder="https://www.youtube.com/watch?v=...">
         </div>
 
-        <!-- 🎥 الجزء الجديد المضاف: صندوق عرض ومعاينة فيديو اليوتيوب الرئيسي المباشر -->
+        <!-- شاشة المعاينة الرئيسية -->
         <div class="main-preview-box">
             <label>شاشة المعاينة الرئيسية للموقع:</label>
             <div class="video-container" style="max-width: 400px; margin: 0 auto;">
@@ -344,7 +344,7 @@
         <div class="results-section" id="results">
             <h2>المقاطع التي قمت باختيارها (جاهزة للمعاينة):</h2>
             <div class="results-grid" id="video-grid-container">
-                <!-- سيتم توليد الكروت هنا ديناميكياً بواسطة الجافاسكربت بناء على اختيار المستخدم -->
+                <!-- سيتم توليد الكروت هنا ديناميكياً بواسطة الجافاسكربت -->
             </div>
         </div>
     </div>
@@ -372,7 +372,7 @@
             }
         }
 
-        // دالة معالجة وعرض المقاطع المختارة فقط ديناميكياً
+        // دالة معالجة وعرض المقاطع المختارة
         function processSelectedVideos() {
             var url = document.getElementById('yt-url').value;
             if(url.trim() === "") {
@@ -395,27 +395,17 @@
             document.getElementById('loading').style.display = 'block';
             document.getElementById('results').style.display = 'none';
 
-            // فيديوهات تجريبية عمودية مختلفة لتبدو المعاينة حقيقية ومتنوعة
-            const sampleVideos = [
-                "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-light-watching-something-41983-large.mp4",
-                "https://assets.mixkit.co/videos/preview/mixkit-vertical-shot-of-a-robot-head-42777-large.mp4",
-                "https://assets.mixkit.co/videos/preview/mixkit-gamer-playing-with-headphones-illuminated-by-neon-lights-41979-large.mp4"
-            ];
-
             setTimeout(function() {
                 document.getElementById('loading').style.display = 'none';
                 const gridContainer = document.getElementById('video-grid-container');
                 gridContainer.innerHTML = ""; // تصفية النتائج السابقة
 
-                // بناء كروت الفيديوهات التي تم اختيارها فقط
+                // بناء كروت الفيديوهات باستخدام نظام الـ iframe التابع لليوتيوب لضمان عملها فوراً
                 selectedParts.forEach(part => {
-                    let randomVideo = sampleVideos[(part - 1) % sampleVideos.length];
                     let cardHTML = `
                         <div class="video-card">
                             <div class="video-container">
-                                <video controls>
-                                    <source src="${randomVideo}" type="video/mp4">
-                                </video>
+                                <iframe width="100%" height="100%" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                             </div>
                             <div class="video-title">المقطع المُختار (جزء ${part})</div>
                             <div class="actions-box">
