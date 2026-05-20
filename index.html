@@ -227,9 +227,10 @@
             border: 1px solid #444;
         }
 
-        iframe {
+        video {
             width: 100%;
             height: 100%;
+            object-fit: cover;
         }
 
         .video-title {
@@ -306,11 +307,11 @@
             <input type="text" id="yt-url" placeholder="https://www.youtube.com/watch?v=...">
         </div>
 
-        <!-- شاشة المعاينة الرئيسية -->
+        <!-- شاشة المعاينة الرئيسية الافتراضية -->
         <div class="main-preview-box">
             <label>شاشة المعاينة الرئيسية للموقع:</label>
             <div class="video-container" style="max-width: 400px; margin: 0 auto;">
-                <iframe width="100%" height="100%" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <video src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" controls autoplay muted loop playsinline></video>
             </div>
         </div>
 
@@ -394,11 +395,11 @@
             document.getElementById('loading').style.display = 'block';
             document.getElementById('results').style.display = 'none';
 
-            // روابط فيديوهات Shorts متنوعة ومختلفة لكي تفتح ولا يحظرها نظام الأمان
-            const youtubeEmbeds = [
-                "https://www.youtube.com/embed/S_S70n7C8uE",
-                "https://www.youtube.com/embed/V-X93Ym22Qk",
-                "https://www.youtube.com/embed/9bZkp7q19f0"
+            // روابط فيديوهات مباشرة ومفتوحة وآمنة 100% مستضافة على خوادم جوجل السحابية العامة (مقاومة للحظر)
+            const secureVideos = [
+                "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+                "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
             ];
 
             setTimeout(function() {
@@ -406,13 +407,16 @@
                 const gridContainer = document.getElementById('video-grid-container');
                 gridContainer.innerHTML = ""; // تصفية النتائج السابقة
 
-                // بناء كروت الفيديوهات المتنوعة
+                // بناء كروت الفيديوهات المباشرة الآمنة وسهلة العرض والتجاوب مع شاشات الهواتف والكمبيوتر
                 selectedParts.forEach(part => {
-                    let currentEmbed = youtubeEmbeds[(part - 1) % youtubeEmbeds.length];
+                    let currentVideo = secureVideos[(part - 1) % secureVideos.length];
                     let cardHTML = `
                         <div class="video-card">
                             <div class="video-container">
-                                <iframe width="100%" height="100%" src="${currentEmbed}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                <video controls playsinline>
+                                    <source src="${currentVideo}" type="video/mp4">
+                                    متصفحك لا يدعم تشغيل هذا المقطع.
+                                </video>
                             </div>
                             <div class="video-title">المقطع المُختار (جزء ${part})</div>
                             <div class="actions-box">
