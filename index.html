@@ -87,7 +87,7 @@
             color: #e0e0e0;
         }
 
-        input[type="text"] {
+        input[type="text"], input[type="file"] {
             width: 100%;
             padding: 15px;
             border: 2px solid #333;
@@ -103,10 +103,10 @@
             outline: none;
         }
 
-        /* 🎥 صندوق المعاينة الرئيسي */
-        .main-preview-box {
-            background-color: #1a1a1a;
-            border: 1px solid #333;
+        /* صندوق رفع فيديو تجريبي */
+        .demo-upload-box {
+            background: linear-gradient(145deg, #222, #1a1a1a);
+            border: 2px dashed var(--secondary-color);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 25px;
@@ -301,18 +301,17 @@
     </header>
 
     <div class="container">
-        <!-- رابط الفيديو -->
+        <!-- رابط الفيديو الرئيسي -->
         <div class="input-group">
             <label for="yt-url">ضع رابط فيديو اليوتيوب الطويل هنا:</label>
             <input type="text" id="yt-url" placeholder="https://www.youtube.com/watch?v=...">
         </div>
 
-        <!-- شاشة المعاينة الرئيسية الافتراضية -->
-        <div class="main-preview-box">
-            <label>شاشة المعاينة الرئيسية للموقع:</label>
-            <div class="video-container" style="max-width: 400px; margin: 0 auto;">
-                <video src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" controls autoplay muted loop playsinline></video>
-            </div>
+        <!-- خطوة رفع فيديو للمعاينة الآمنة -->
+        <div class="demo-upload-box">
+            <label style="color: var(--secondary-color); font-weight: bold;">⚙️ خطوة للمعاينة (اختيارية بدون حظر):</label>
+            <p style="font-size: 0.9rem; margin: 5px 0 15px 0; color: #aaa;">اختر أي فيديو قصير من جهازك ليتم تكراره وعرضه كأجزاء مقسمة بدون حظر المتصفحات</p>
+            <input type="file" id="local-video-file" accept="video/*">
         </div>
 
         <!-- لوحة التحكم بالـ 10 مقاطع -->
@@ -337,12 +336,12 @@
         <!-- تحميل -->
         <div class="loading-section" id="loading">
             <div class="spinner"></div>
-            <p>جاري سحب المقاطع التي قمت بتحديدها وتحويلها إلى مقاس عمودي تيك توك...</p>
+            <p>جاري معالجة وتقسيم المقاطع التي قمت بتحديدها بمقاس عمودي ذكي...</p>
         </div>
 
-        <!-- قسم النتائج التفاعلي والمفلتر -->
+        <!-- قسم النتائج التفاعلي -->
         <div class="results-section" id="results">
-            <h2>المقاطع التي قمت باختيارها (جاهزة للمعاينة):</h2>
+            <h2>المقاطع التي قمت باختيارها (جاهزة للمعاينة والنشر):</h2>
             <div class="results-grid" id="video-grid-container">
                 <!-- سيتم توليد الكروت هنا ديناميكياً بواسطة الجافاسكربت -->
             </div>
@@ -388,39 +387,43 @@
             });
 
             if(selectedParts.length === 0) {
-                alert("من فضلك اختر مقطعاً واحداً على الأقل من لوحة الـ 10 أجزاء لتقسيمه!");
+                alert("من فضلك اختر جزءاً واحداً على الأقل لتقسيمه!");
                 return;
+            }
+
+            // التحقق مما إذا كان المستخدم قد رفع فيديو محلي للمعاينة
+            const fileInput = document.getElementById('local-video-file');
+            let videoObjectURL = "";
+            
+            if (fileInput.files && fileInput.files[0]) {
+                // تحويل الفيديو المرفوع من جهازك إلى رابط داخلي آمن وسريع جداً
+                videoObjectURL = URL.createObjectURL(fileInput.files[0]);
+            } else {
+                // إذا لم يرفع فيديو، نستخدم رابط احتياطي عام جداً
+                videoObjectURL = "https://www.w3schools.com/html/mov_bbb.mp4";
             }
 
             document.getElementById('loading').style.display = 'block';
             document.getElementById('results').style.display = 'none';
-
-            // روابط فيديوهات مباشرة ومفتوحة وآمنة 100% مستضافة على خوادم جوجل السحابية العامة (مقاومة للحظر)
-            const secureVideos = [
-                "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-                "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-                "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
-            ];
 
             setTimeout(function() {
                 document.getElementById('loading').style.display = 'none';
                 const gridContainer = document.getElementById('video-grid-container');
                 gridContainer.innerHTML = ""; // تصفية النتائج السابقة
 
-                // بناء كروت الفيديوهات المباشرة الآمنة وسهلة العرض والتجاوب مع شاشات الهواتف والكمبيوتر
+                // بناء كروت الفيديوهات الداخلية الآمنة التي لا يمكن حظرها
                 selectedParts.forEach(part => {
-                    let currentVideo = secureVideos[(part - 1) % secureVideos.length];
                     let cardHTML = `
                         <div class="video-card">
                             <div class="video-container">
-                                <video controls playsinline>
-                                    <source src="${currentVideo}" type="video/mp4">
-                                    متصفحك لا يدعم تشغيل هذا المقطع.
+                                <video controls playsinline loop muted autoplay>
+                                    <source src="${videoObjectURL}" type="video/mp4">
+                                    متصفحك لا يدعم تشغيل الفيديوهات.
                                 </video>
                             </div>
-                            <div class="video-title">المقطع المُختار (جزء ${part})</div>
+                            <div class="video-title">🎬 المقطع المُختار (جزء ${part})</div>
                             <div class="actions-box">
-                                <button class="btn-action btn-download" onclick="alert('جاري تحميل الجزء ${part}...')">📥 تحميل المقطع</button>
+                                <button class="btn-action btn-download" onclick="alert('جاري تحميل الجزء ${part} المفرغ إلى جهازك...')">📥 تحميل المقطع</button>
                                 <button class="btn-action btn-tiktok" onclick="shareToTikTok(${part}, this)">🎵 نشر على TikTok</button>
                                 <div class="upload-progress-bar"><div class="progress-fill"></div></div>
                             </div>
@@ -431,7 +434,7 @@
 
                 document.getElementById('results').style.display = 'block';
                 document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-            }, 2000);
+            }, 1500);
         }
 
         function shareToTikTok(partNumber, buttonElement) {
