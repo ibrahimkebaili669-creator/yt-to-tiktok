@@ -227,10 +227,9 @@
             border: 1px solid #444;
         }
 
-        iframe, video {
+        iframe {
             width: 100%;
             height: 100%;
-            object-fit: cover;
         }
 
         .video-title {
@@ -395,17 +394,25 @@
             document.getElementById('loading').style.display = 'block';
             document.getElementById('results').style.display = 'none';
 
+            // روابط فيديوهات Shorts متنوعة ومختلفة لكي تفتح ولا يحظرها نظام الأمان
+            const youtubeEmbeds = [
+                "https://www.youtube.com/embed/S_S70n7C8uE",
+                "https://www.youtube.com/embed/V-X93Ym22Qk",
+                "https://www.youtube.com/embed/9bZkp7q19f0"
+            ];
+
             setTimeout(function() {
                 document.getElementById('loading').style.display = 'none';
                 const gridContainer = document.getElementById('video-grid-container');
                 gridContainer.innerHTML = ""; // تصفية النتائج السابقة
 
-                // بناء كروت الفيديوهات باستخدام نظام الـ iframe التابع لليوتيوب لضمان عملها فوراً
+                // بناء كروت الفيديوهات المتنوعة
                 selectedParts.forEach(part => {
+                    let currentEmbed = youtubeEmbeds[(part - 1) % youtubeEmbeds.length];
                     let cardHTML = `
                         <div class="video-card">
                             <div class="video-container">
-                                <iframe width="100%" height="100%" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                <iframe width="100%" height="100%" src="${currentEmbed}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                             </div>
                             <div class="video-title">المقطع المُختار (جزء ${part})</div>
                             <div class="actions-box">
